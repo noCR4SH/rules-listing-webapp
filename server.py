@@ -113,22 +113,7 @@ def download_csv():
     fetched_rules = reports.get_rules(bearer_token, AUTH0_M2M_AUDIENCE)
     final_data = reports.find_client(fetched_rules)
 
-    def generate_csv():
-        data = StringIO()
-        w = csv.writer(data)
-
-        w.writerow(('id', 'enabled', 'name', 'order', 'stage', 'client_name'))
-        yield data.getvalue()
-        data.seek(0)
-        data.truncate(0)
-
-        for item in final_data:
-            w.writerow((item['id'], item['enabled'], item['name'], item['order'], item['stage'], item['client_name']))
-            yield data.getvalue()
-            data.seek(0)
-            data.truncate(0)
-
-    response = Response(generate_csv(), mimetype='text/csv')
+    response = Response(reports.generate_csv(final_data), mimetype='text/csv')
     response.headers.set("Content-Disposition", "attachment", filename="report.csv")
 
     return response
