@@ -2,8 +2,11 @@
 """
 from functools import wraps
 import json
+import csv
 from os import environ as env
+from io import StringIO
 from werkzeug.exceptions import HTTPException
+from werkzeug.wrappers import Response
 
 from dotenv import load_dotenv, find_dotenv
 from flask import Flask
@@ -15,6 +18,7 @@ from flask import url_for
 from authlib.flask.client import OAuth
 from six.moves.urllib.parse import urlencode
 
+import reports
 import constants
 
 ENV_FILE = find_dotenv()
@@ -27,6 +31,7 @@ AUTH0_CLIENT_SECRET = env.get(constants.AUTH0_CLIENT_SECRET)
 AUTH0_DOMAIN = env.get(constants.AUTH0_DOMAIN)
 AUTH0_BASE_URL = 'https://' + AUTH0_DOMAIN
 AUTH0_AUDIENCE = env.get(constants.AUTH0_AUDIENCE)
+AUTH0_M2M_AUDIENCE = env.get(constants.AUTH0_M2M_AUDIENCE)
 
 app = Flask(__name__, static_url_path='/public', static_folder='./public')
 app.secret_key = constants.SECRET_KEY
@@ -100,6 +105,33 @@ def logout():
 @app.route('/report')
 def report():
     pass
+
+@app.route('/download_csv')
+@requires_auth
+def download_csv():
+    bearer_token = reports.get_token(AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_M2M_AUDIENCE, AUTH0_DOMAIN)
+    fetched_rules = reports.get_rules(bearer_token, AUTH0_M2M_AUDIENCE)
+    final_data = reports.find_client(fetched_rules)
+
+    def generate_csv():
+        data = StringIO()
+        w = csv.writer(data)
+
+        w.writerow(('id', 'enabled', 'name', 'order', 'stage', 'client_name'))
+        yield data.getvalue()
+        data.seek(0)
+        data.truncate(0)
+
+        for item in final_data:
+            w.writerow((item['id'], item['enabled'], item['name'], item['order'], item['stage'], item['client_name']))
+            yield data.getvalue()
+            data.seek(0)
+            data.truncate(0)
+
+    response = Response(generate_csv(), mimetype='text/csv')
+    response.headers.set("Content-Disposition", "attachment", filename="report.csv")
+
+    return response
 
 @app.route('/home')
 @requires_auth
