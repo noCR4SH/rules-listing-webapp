@@ -1,0 +1,20 @@
+{% extends "main.html" %}
+        
+{% block content %}
+			<div class="container has-text-centered">
+				<div class="columns">
+                    <div class="column">
+                        <figure class="image is-128x128">
+						    <img src="{{userinfo['picture']}}"/>
+					    </figure>
+                    </div>
+					<div class="column is-four-fifths has-text-left">
+						<h1 class="title is-1">Hello, {{userinfo['name']}}</h1>
+						<p class="is-size-4">Go to Rules Report to generate report. If you want to check out your profile, head out to Account -> Profile.</p>
+					</div>
+					<!-- <div class="column is-one-third has-text-left">
+						<pre>{{userinfo_pretty}}</pre>
+					</div> -->
+				</div>
+			</div>
+{% endblock %}
