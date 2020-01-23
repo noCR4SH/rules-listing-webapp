@@ -27,8 +27,6 @@
 					<div class="navbar-item has-dropdown is-hoverable">
 						<a class="navbar-link">Account</a>
 						<div class="navbar-dropdown">
-							<a class="navbar-item">Profile</a>
-							<hr class="navbar-divider">
 							<a class="navbar-item" href="/logout">Logout</a>
 						</div>
 					</div>
@@ -40,22 +38,6 @@
 	<section class="hero is-fullheight">
 		<div class="hero-body">
 		{% block content %}{% endblock %}
-<!--
-			<div class="container has-text-centered">
-				<div class="columns is-8 is-variable ">
-					<div class="column is-two-thirds has-text-left">
-					    <figure class="image is-64x64">
-					        <img src="{{userinfo['picture']}}"/>
-					    </figure>
-						<h1 class="title is-1">Hello, {{userinfo['name']}}</h1>
-						<p class="is-size-4">This is a simple web app!</p>
-					</div>
-					<div class="column is-one-third has-text-left">
-						<pre>{{userinfo_pretty}}</pre>
-					</div>
-				</div>
-			</div>
--->
 		</div>
 	</section>
 </body>
