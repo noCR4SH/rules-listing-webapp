@@ -2,9 +2,7 @@
 """
 from functools import wraps
 import json
-import csv
 from os import environ as env
-from io import StringIO
 from werkzeug.exceptions import HTTPException
 from werkzeug.wrappers import Response
 
@@ -111,10 +109,10 @@ def report():
 @app.route('/download_csv')
 @requires_auth
 def download_csv():
-    print("Click")
     bearer_token = reports.get_token(AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_M2M_AUDIENCE, AUTH0_DOMAIN)
+    clients_data = reports.get_clients(bearer_token, AUTH0_M2M_AUDIENCE)
     fetched_rules = reports.get_rules(bearer_token, AUTH0_M2M_AUDIENCE)
-    final_data = reports.find_client(fetched_rules)
+    final_data = reports.find_client(fetched_rules, clients_data)
 
     response = Response(reports.generate_csv(final_data), mimetype='text/csv')
     response.headers.set("Content-Disposition", "attachment", filename="report.csv")
