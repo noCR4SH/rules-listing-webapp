@@ -104,11 +104,14 @@ def logout():
 
 @app.route('/report')
 def report():
-    pass
+    return render_template('reports.html',
+                           userinfo=session[constants.PROFILE_KEY],
+                           userinfo_pretty=json.dumps(session[constants.JWT_PAYLOAD], indent=4))
 
 @app.route('/download_csv')
 @requires_auth
 def download_csv():
+    print("Click")
     bearer_token = reports.get_token(AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_M2M_AUDIENCE, AUTH0_DOMAIN)
     fetched_rules = reports.get_rules(bearer_token, AUTH0_M2M_AUDIENCE)
     final_data = reports.find_client(fetched_rules)
